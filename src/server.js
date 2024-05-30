@@ -1,0 +1,11 @@
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const { users, pool } = require('./db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+dotenv.config({ path: '../.env' });
+const secretKey = process.env.JWT_SECRET;
+const app = express();
+app.use(express.json());
+app.use(cors());
