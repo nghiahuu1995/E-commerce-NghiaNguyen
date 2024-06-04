@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { Navigate,useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
+import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { TextField, Button, Container, Typography, Box } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import { useTheme } from "@mui/material/styles";
 const Register = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    password: '',
-    securityQuestion: '',
+    email: "",
+    username: "",
+    password: "",
+    securityQuestion: "",
+    answer: "",
   });
-
 
   const handleChange = (e) => {
     setFormData({
@@ -20,24 +22,58 @@ const Register = () => {
   };
 
   const handleLogin = () => {
-    
-    navigate('/login')
+    navigate("/login");
   };
 
-  const handleSignUp = () => {
-    // navigate(true);
+  const handleSignUp = async (e) => {
     // post method here
+    e.preventDefault();
+    try {
+      const res = await fetch("http://192.168.1.32:3001/auth/register", {
+        method: "POST",
+        headers: "application/json",
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Registration failed", data);
+      else {
+        console.log("User registered successfully", data);
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Error fetching data");
+    }
   };
 
-  
+  const navigateHome = () => {
+    navigate("/");
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://192.168.1.32:3001/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Registration failed", data);
+      else {
+        console.log("User registered successfully", data);
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Error fetching data");
+    }
+  };
 
   return (
     <Container maxWidth="xs">
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           marginTop: 8,
         }}
       >
@@ -91,13 +127,23 @@ const Register = () => {
             value={formData.securityQuestion}
             onChange={handleChange}
           />
-          
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="securityAnswer"
+            label="Answer"
+            name="securityAnswer"
+            autoComplete="security-answer"
+            value={formData.securityanswer}
+            onChange={handleChange}
+          />
           <Button
             fullWidth
             type="submit"
             variant="contained"
             color="signup"
-            onClick={handleSignUp}
+            onClick={handleSubmit}
             sx={{ mt: 1, mb: 2 }}
           >
             Sign Up
@@ -111,6 +157,30 @@ const Register = () => {
             sx={{ mt: 3, mb: 2 }}
           >
             Log In
+          </Button>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            mt: 2,
+          }}
+        >
+          <Button
+            onClick={navigateHome}
+            sx={{
+              backgroundColor: theme.palette.signup.main,
+              color: theme.palette.primary.contrastText,
+              "&:hover": {
+                backgroundColor: theme.palette.signup.dark,
+              },
+              borderRadius: "50%",
+              padding: "10px",
+              minWidth: "auto",
+            }}
+          >
+            <HomeIcon fontSize="small" />
           </Button>
         </Box>
       </Box>

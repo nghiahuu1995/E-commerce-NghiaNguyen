@@ -1,0 +1,10 @@
+05/30/2024 - App initialized
++ Set up env variables
++ Create UI for Login, NavBar and Register components
++ Create server.js, db.js, connection to MySQL db for backend
++ Set routes for the App
++ Testing form submission with backend
+06/01/2024 - Working on UI and fixing UI with ChatGPT
++ Create LandingPage, Protected Page, Profile Page, Inbox, Inbox Preview and Stylings
++ Create CategoryList, Product and Products components for ProtectedPage
+
