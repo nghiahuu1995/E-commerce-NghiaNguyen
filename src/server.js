@@ -84,21 +84,58 @@ app.post("/auth/login", async (req, res) => {
 //         res.status(200).json(results);
 //     });
 // });
+
+
+
+
+// app.get("/products", (req, res) => {
+//     const sql = "SELECT * FROM products";
+//     db.query(sql, (err, results) => {
+//         if (err) {
+//             console.error("Error getting products", err);
+//             return res.status(500).json({ message: "Server error" });
+//         }
+//         // Convert image buffer to base64 string
+//         const products = results.map(product => ({
+//             ...product,
+//             image: product.image ? product.image.toString('base64') : null,
+//         }));
+//         res.status(200).json(products);
+//     });
+// });
 app.get("/products", (req, res) => {
-    const sql = "SELECT * FROM products";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error("Error getting products", err);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+
+    const sql = "SELECT * FROM products LIMIT ? OFFSET ?";
+    const countSql = "SELECT COUNT(*) AS count FROM products";
+
+    db.query(countSql, (countErr, countResults) => {
+        if (countErr) {
+            console.error("Error counting products", countErr);
             return res.status(500).json({ message: "Server error" });
         }
-        // Convert image buffer to base64 string
-        const products = results.map(product => ({
-            ...product,
-            image: product.image ? product.image.toString('base64') : null,
-        }));
-        res.status(200).json(products);
+
+        const totalItems = countResults[0].count;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        db.query(sql, [limit, offset], (err, results) => {
+            if (err) {
+                console.error("Error getting products", err);
+                return res.status(500).json({ message: "Server error" });
+            }
+
+            res.status(200).json({
+                currentPage: page,
+                totalPages: totalPages,
+                totalItems: totalItems,
+                products: results
+            });
+        });
     });
 });
+
 
 
 

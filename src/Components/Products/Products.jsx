@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Product from "./Product";
 import { Container, Grid, Typography } from "@mui/material";
-const Products = ({ products }) => {
+const Products = ({ products = [] }) => {
   return (
     <Container>
       <Typography variant="h4" component="h2" sx={{ my: 4 }}>
