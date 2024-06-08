@@ -1,23 +1,31 @@
-import React, { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import { Badge, Popover, Typography, Box } from "@mui/material";
-import pandaLogo from "../../assets/imgs/logos/panda.png";
-import sadPandaLogo from "../../assets/imgs/logos/sadpanda.png";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { CartContext } from "../../contexts/CartContext";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Badge,
+  Popover,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+import { Delete } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSignInAlt,
-  faUserPlus,
-  faShop,
-  faSearch,
   faCartShopping,
   faAddressCard,
   faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import { styled } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import pandaLogo from "../../assets/imgs/logos/panda.png";
+import sadPandaLogo from "../../assets/imgs/logos/sadpanda.png";
+import Search from "./Search";
 
 const Root = styled("div")({
   display: "flex",
@@ -28,47 +36,57 @@ const Root = styled("div")({
 const TopBar = styled(AppBar)({
   width: "100%",
   height: "48px",
-  background:
-    // "linear-gradient(0deg, rgba(0,124,134,1) 0%, rgba(0,64,140,1) 100%)",
-    // "linear-gradient(0deg, rgba(0,64,140,1) 0%, rgba(0,64,140,1) 100%)",
-    "linear-gradient(0deg, rgb(0,117,255) 0%, rgb(0,117,255) 100%)",
+  position: "fixed",
+  zIndex: "1000",
+  background: "linear-gradient(0deg, rgb(0,117,255) 0%, rgb(0,117,255) 100%)",
 });
 
 const Buttons = styled("div")({
   display: "flex",
   alignItems: "center",
   flexGrow: 1,
+  justifyContent: "center",
 });
+
 const IconStyling = {
   marginRight: "0px",
   marginLeft: "6px",
   fontWeight: "800",
 };
+
 const ButtonStyling = {
   color: "white",
   marginRight: "0px",
-  marginLeft: "24px",
+  marginLeft: "0px",
   fontSize: "1.2rem",
-
   "&:hover": {
     backgroundColor: "rgba(0,2,100,0.6)",
   },
 };
+
 const LogoutStyling = {
   color: "white",
   marginRight: "0px",
-  marginLeft: "24px",
+  marginLeft: "2px",
   fontSize: "1.2rem",
-
   "&:hover": {
     backgroundColor: "red",
   },
 };
-const NavBar = () => {
+
+const NavBar = ({ searchHandler }) => {
   const isAuthenticated = !!localStorage.getItem("token");
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [cartAnchorEl, setCartAnchorEl] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+
+  const { cartItems, setCartItems, totalPrice } = useContext(CartContext);
+
+  // const totalPrice = cartItems
+  //   .reduce((acc, item) => parseFloat(item.price * item.quantity) + acc, 0)
+  //   .toFixed(2);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -77,22 +95,42 @@ const NavBar = () => {
     setAnchorEl(null);
   };
 
+  const handleCartClick = (event) => {
+    setCartAnchorEl(event.currentTarget);
+  };
+
+  const handleCartClose = () => {
+    setCartAnchorEl(null);
+  };
+
   const open = Boolean(anchorEl);
+  const cartOpen = Boolean(cartAnchorEl);
   const id = open ? "simple-popover" : undefined;
+  const cartId = cartOpen ? "cart-popover" : undefined;
 
   const handleNavigateToInbox = () => {
     navigate("/inbox");
     handleClose();
   };
-  const handleSigout = () => {
+
+  const handleSignout = () => {
     localStorage.removeItem("token");
     navigate("/login");
+  };
+
+  const handleDeleteFromCart = (id) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
+  const handleCheckOut = () => {
+    navigate("/payment");
+    handleCartClose();
   };
 
   return (
     <Root>
       <TopBar
-        position="static"
+        position="fixed"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -112,20 +150,19 @@ const NavBar = () => {
               size="medium"
               onClick={() =>
                 isAuthenticated
-                  ? (window.location.href = "/protected")
+                  ? (window.location.href = "/products")
                   : (window.location.href = "/")
               }
             >
-              {/* <FontAwesomeIcon icon={faShop} /> */}
-              <img
+              {/* <img
                 src={pandaLogo}
                 alt=""
                 style={{ width: "30px", marginRight: "0px" }}
-              />
+              /> */}
               <Typography
                 sx={{
-                  marginRight: "12px",
-                  marginLeft: "12px",
+                  marginRight: "6px",
+                  marginLeft: "6px",
                   fontWeight: "700",
                 }}
               >
@@ -134,10 +171,7 @@ const NavBar = () => {
             </Button>
             {isAuthenticated && (
               <Buttons style={{ display: "flex", justifyContent: "end" }}>
-                <Button color="inherit" sx={ButtonStyling} size="small">
-                  <FontAwesomeIcon icon={faSearch} />
-                  <Typography sx={IconStyling}>Search</Typography>
-                </Button>
+                <Search searchHandler={searchHandler} />
                 <Button
                   color="inherit"
                   sx={ButtonStyling}
@@ -147,10 +181,111 @@ const NavBar = () => {
                   <FontAwesomeIcon icon={faAddressCard} />
                   <Typography sx={IconStyling}>Profile</Typography>
                 </Button>
-                <Button color="inherit" sx={ButtonStyling} size="small">
-                  <FontAwesomeIcon icon={faCartShopping} />
+                <Button
+                  color="inherit"
+                  sx={ButtonStyling}
+                  size="small"
+                  onClick={handleCartClick}
+                >
+                  <Badge badgeContent={cartItems.length} color="success">
+                    <FontAwesomeIcon icon={faCartShopping} />
+                  </Badge>
                   <Typography sx={IconStyling}>Cart</Typography>
                 </Button>
+                <Popover
+                  id={cartId}
+                  open={cartOpen}
+                  anchorEl={cartAnchorEl}
+                  onClose={handleCartClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                >
+                  <Box sx={{ p: 2, minWidth: "200px", maxWidth: "100%" }}>
+                    <Typography variant="h6">Cart</Typography>
+                    <List sx={{ margin: "0px" }}>
+                      {cartItems.map((item, index) => (
+                        <div key={index}>
+                          <ListItem
+                            sx={{
+                              marginTop: "02px",
+                              marginBottom: "02px",
+                              backgroundColor: "#fffbca",
+                              height: "120px",
+                              width: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                width: "240px",
+                              }}
+                            >
+                              <img
+                                src={item.imageUrl}
+                                alt=""
+                                width="40%"
+                                height="100%"
+                                style={{ marginRight: "10px" }}
+                              />
+                              <List sx={{ width: "100%" }}>
+                                <ListItemText
+                                  primary={item.product}
+                                  secondary={`price: $${item.price}`}
+                                  sx={{ marginRight: "4px" }}
+                                />
+                                <ListItemText
+                                  secondary={`Quantity: ${item.quantity}`}
+                                  sx={{ marginRight: "4px" }}
+                                />
+                                <ListItemText
+                                  secondary={`$${(
+                                    item.quantity * item.price
+                                  ).toFixed(2)}`}
+                                  sx={{ marginRight: "4px" }}
+                                />
+                              </List>
+                            </Box>
+                            <Button
+                              sx={{ alignSelf: "flex-end" }}
+                              size="small"
+                              variant="contained"
+                              color="error"
+                              startIcon={<Delete />}
+                              onClick={() => handleDeleteFromCart(item.id)}
+                            >
+                              Delete
+                            </Button>
+                          </ListItem>
+                          {index < cartItems.length - 1 && <Divider />}
+                        </div>
+                      ))}
+                    </List>
+                    {cartItems.length < 1 && (
+                      <Typography variant="body2">No items in cart</Typography>
+                    )}
+                    <Typography variant="body1">
+                      Total: ${totalPrice}
+                    </Typography>
+                    <Button
+                      onClick={handleCheckOut}
+                      variant="contained"
+                      color="primary"
+                      sx={{ mt: 2 }}
+                    >
+                      Check out
+                    </Button>
+                  </Box>
+                </Popover>
                 <Button onClick={handleClick} sx={ButtonStyling}>
                   <Badge badgeContent={4} color="primary">
                     <FontAwesomeIcon
@@ -158,7 +293,7 @@ const NavBar = () => {
                       sx={{ color: "white" }}
                     />
                   </Badge>
-                  <Typography sx={{ color: "white", marginLeft: "8px" }}>
+                  <Typography sx={{ color: "white", marginLeft: "4px" }}>
                     Message
                   </Typography>
                 </Button>
@@ -199,36 +334,13 @@ const NavBar = () => {
             }}
           >
             {isAuthenticated ? (
-              // <Button
-              //   color="inherit"
-              //   onClick={handleSigout}
-              //   style={ButtonStyling}
-              //   size="small"
-              //   onMouseEnter={() => setIsHovered(true)}
-              //   onMouseLeave={() => setIsHovered(false)}
-              // >
-              //   <FontAwesomeIcon icon={faSignInAlt} />
-              //   <Typography sx={IconStyling}>Log out</Typography>
-              //   {isHovered ? (
-              //     <img
-              //       src={sadPandaLogo}
-              //       alt=""
-              //       style={{ width: "30px", marginLeft: "12px" }}
-              //     />
-              //   ) : (
-              //     <img
-              //       src={pandaLogo}
-              //       alt=""
-              //       style={{ width: "30px", marginLeft: "12px" }}
-              //     />
-              //   )}
-              // </Button>
               <Button
                 color="inherit"
                 sx={LogoutStyling}
                 size="small"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                onClick={handleSignout}
               >
                 <FontAwesomeIcon icon={faSignInAlt} />
                 <Typography sx={IconStyling}>Log out</Typography>
@@ -236,13 +348,13 @@ const NavBar = () => {
                   <img
                     src={sadPandaLogo}
                     alt=""
-                    style={{ width: "20px", marginLeft: "12px" }}
+                    style={{ width: "20px", marginLeft: "6px" }}
                   />
                 ) : (
                   <img
                     src={pandaLogo}
                     alt=""
-                    style={{ width: "20px", marginLeft: "12px" }}
+                    style={{ width: "20px", marginLeft: "6px" }}
                   />
                 )}
               </Button>
@@ -257,18 +369,6 @@ const NavBar = () => {
                   <Typography>Sign In</Typography>
                   <FontAwesomeIcon icon={faSignInAlt} style={IconStyling} />
                 </Button>
-                {/* <Button
-                  color="inherit"
-                  onClick={() => (window.location.href = "/register")}
-                  style={{ color: "white", fontSize: "1.2rem" }}
-                  size="large"
-                >
-                  <Typography>Sign Up</Typography>
-                  <FontAwesomeIcon
-                    icon={faUserPlus}
-                    style={{ marginLeft: "12px" }}
-                  />
-                </Button> */}
               </>
             )}
           </div>

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { useTheme } from "@mui/material/styles";
+
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
   const theme = useTheme();
@@ -24,7 +26,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null); // Reset error state before attempting login
+    setError(null);
 
     try {
       const res = await fetch("http://192.168.1.32:3001/auth/login", {
@@ -36,13 +38,16 @@ const LoginPage = () => {
         }),
       });
       const data = await res.json();
-
+      console.log(data, data.user);
       if (!res.ok)
         throw new Error(data.message || "Login failed. Invalid Credentials");
 
       localStorage.setItem("token", data.token);
+      const decodedToken = jwtDecode(data.token);
+      localStorage.setItem("user", JSON.stringify(decodedToken));
+      console.log(decodedToken);
       console.log("User logged in successfully", data);
-      navigate("/protected");
+      navigate("/products");
     } catch (err) {
       setError(err.message);
       console.log("Login error:", err.message);

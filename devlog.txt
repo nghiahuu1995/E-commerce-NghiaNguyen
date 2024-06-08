@@ -8,3 +8,15 @@
 + Create LandingPage, Protected Page, Profile Page, Inbox, Inbox Preview and Stylings
 + Create CategoryList, Product and Products components for ProtectedPage
 
+06/04/2024 - Fixing UI
++ Create pagination for products
++ Image generated and captured in My Dream Setup game and Adobe Firefly
+06/06/2024 -  Cart functionality
++ Add quantity field to choose for indiviual product
++ Add to cart functionality
++ Delete from functionality
++ Add to localStorage when cart changes
++ Add useContext (by ChatGPT)
+
+06/07/2024
++ Add payment process

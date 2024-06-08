@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Card,
@@ -65,6 +65,7 @@ const SummaryCard = styled(Card)({
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
+
   return (
     <div
       role="tabpanel"
@@ -84,7 +85,12 @@ const TabPanel = (props) => {
 
 const ProfilePage = () => {
   const [value, setValue] = useState(0);
-
+  const [user, setUser] = useState({});
+  const { username, email } = user;
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    setUser(userData);
+  }, []);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -120,14 +126,14 @@ const ProfilePage = () => {
                   alt="Profile Picture"
                 />
                 <Typography variant="h5" component="div">
-                  Alex Johnson
+                  {username}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
                   component="div"
                 >
-                  alexjohnson@example.com
+                  {email}
                 </Typography>
                 <Tabs
                   value={value}
@@ -150,13 +156,14 @@ const ProfilePage = () => {
                   </Typography>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                  <Button
+                  {/* <Button
                     variant="contained"
                     color="primary"
                     style={{ marginTop: "20px" }}
+                    onClick={() => {}}
                   >
                     Change Password
-                  </Button>
+                  </Button> */}
                 </TabPanel>
               </CardContent>
             </ProfileCard>

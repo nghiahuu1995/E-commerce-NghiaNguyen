@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -6,41 +6,88 @@ import {
   Typography,
   Button,
   Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Rating,
 } from "@mui/material";
 
-const Product = ({ product }) => {
-  const { product_name, price, seller, description, image_url } = product;
+const productNameStyling = {
+  fontWeight: "800",
+};
 
-  const handleAddToCart = () => {
-    console.log(`Adding ${product_name} to cart`);
-    // Add logic to handle adding the product to the cart
+const Product = ({ product, onAddToCart }) => {
+  const [quantity, setQuantity] = useState(1);
+  const {
+    product_name,
+    price,
+    seller,
+    description,
+    image_url,
+    rating,
+    stock,
+    id,
+  } = product;
+
+  const quantityHandler = (e) => {
+    setQuantity(parseInt(e.target.value));
   };
 
   return (
     <Card
       sx={{
-        width: 275,
-        margin: 2,
+        width: { xs: "90%", sm: 250, lg: 275 },
+        // margin: { xs: 1, sm: 0 },
+        marginBottom: "6px",
+        marginTop: "6px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: "100%",
+        height: { xs: "auto", sm: 400 },
+        maxHeight: "100%",
       }}
     >
       <CardMedia
         component="img"
-        height="140"
+        height="160px"
+        // maxHeight="100%"
         image={image_url}
         alt={product_name}
       />
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h5" component="div">
+      <CardContent
+        sx={{
+          flexGrow: 1,
+          overflow: "scroll",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+        }}
+      >
+        <Typography variant="h5" component="div" sx={productNameStyling}>
           {product_name}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
           Price: ${price}
         </Typography>
-        <Typography variant="body2">Seller: {seller}</Typography>
+        <Typography variant="body2">🏪 Seller: {seller}</Typography>
+        <Typography
+          variant="body2"
+          sx={{ display: "flex", alignContent: "center" }}
+        >
+          ⭐ Rating: {Number(rating).toFixed(1)}
+          <Rating
+            name="half-rating-read"
+            defaultValue={+rating}
+            precision={0.1}
+            size="small"
+            readOnly
+          />
+        </Typography>
+
+        <Typography variant="body2">📦 Stock: {stock}</Typography>
         <Typography
           variant="body2"
           sx={{
@@ -53,12 +100,53 @@ const Product = ({ product }) => {
           Description: {description}
         </Typography>
       </CardContent>
-      <Box sx={{ p: 2, textAlign: "center" }}>
+      <Box
+        sx={{
+          p: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-around",
+        }}
+      >
+        <FormControl sx={{ m: 1, minWidth: 80 }}>
+          <InputLabel id="demo-simple-select-autowidth-label">
+            Quantity
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-autowidth-label"
+            id="demo-simple-select-autowidth"
+            value={quantity}
+            onChange={quantityHandler}
+            autoWidth
+            label="Quantity"
+            size="small"
+          >
+            <MenuItem value={1}>1</MenuItem>
+            <MenuItem value={2}>2</MenuItem>
+            <MenuItem value={3}>3</MenuItem>
+            <MenuItem value={4}>4</MenuItem>
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={6}>6</MenuItem>
+            <MenuItem value={7}>7</MenuItem>
+            <MenuItem value={8}>8</MenuItem>
+            <MenuItem value={9}>9</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
+          </Select>
+        </FormControl>
         <Button
           variant="contained"
           color="primary"
-          onClick={handleAddToCart}
-          fullWidth
+          onClick={() => {
+            const cartProducts = {
+              id: id,
+              product: product_name,
+              price: price,
+              imageUrl: image_url,
+              quantity: quantity,
+            };
+            console.log(cartProducts);
+            onAddToCart(cartProducts);
+          }}
         >
           Add to Cart
         </Button>
