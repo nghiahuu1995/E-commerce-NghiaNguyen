@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button, Container } from "@mui/material";
+import { Typography, Button, Container, Box } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBar from "../NavBar/NavBar";
@@ -22,9 +22,11 @@ const sections = [
     buttonLink: "#welcome",
     details: `Welcome to the ultimate destination for online shopping! At our e-commerce site, we pride ourselves on offering a vast selection of high-quality products at unbeatable prices. Our user-friendly interface and seamless shopping experience ensure that you can find exactly what you need with ease. Whether you're looking for the latest electronics, stylish home goods, or trendy fashion items, we've got you covered.
 
-Our commitment to customer satisfaction drives us to continually expand our product range, providing you with an ever-growing selection of items to choose from. We work tirelessly to source the best products from trusted brands and suppliers, ensuring that every purchase you make is a great value for your money. With our fast shipping and hassle-free returns, shopping with us is always a convenient and enjoyable experience.
+Our commitment to customer satisfaction drives us to continually expand our product range, providing you with an ever-growing selection of items to choose from. We work tirelessly to source the best products from trusted brands and suppliers, ensuring that every purchase you make is a great value for your money. 
 
-But it's not just about the products; it's about the experience. Our dedicated customer service team is always ready to assist you with any questions or concerns you may have. We believe in building lasting relationships with our customers, and we strive to exceed your expectations in every way possible.`,
+`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/welcome.mp4",
   },
   {
     id: "promise",
@@ -38,6 +40,8 @@ But it's not just about the products; it's about the experience. Our dedicated c
 Our promise extends beyond the products themselves. We believe in transparency and integrity, ensuring that you have all the information you need to make informed purchasing decisions. Our detailed product descriptions, customer reviews, and responsive customer service team are all part of our commitment to providing you with a seamless shopping experience.
 
 Customer satisfaction is our top priority. We are dedicated to resolving any issues that may arise and are always here to help you with any concerns. Your trust is important to us, and we aim to build long-term relationships by delivering on our promise of quality and service.`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/promise.mp4",
   },
   {
     id: "policy",
@@ -51,6 +55,8 @@ Customer satisfaction is our top priority. We are dedicated to resolving any iss
 Our guarantee reflects our confidence in the products we offer and our commitment to providing you with the best possible shopping experience. We believe that buying online should be worry-free, and our return policy is designed to give you peace of mind. You can shop with confidence, knowing that your satisfaction is guaranteed.
 
 We value your trust and strive to make your shopping experience as smooth and enjoyable as possible. Our customer service team is always available to assist you with returns, exchanges, or any other questions you may have. We are here to ensure that you are completely satisfied with your purchase.`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/guarantee.mp4",
   },
   {
     id: "about",
@@ -64,6 +70,8 @@ We value your trust and strive to make your shopping experience as smooth and en
 We believe that shopping should be convenient and enjoyable. Our user-friendly website is designed to make it easy for you to find what you're looking for, with detailed product descriptions, high-quality images, and customer reviews to help you make informed decisions. Our secure payment system and fast shipping options ensure that your orders are processed quickly and delivered to your doorstep in no time.
 
 Customer satisfaction is at the core of what we do. We are committed to providing excellent customer service and support, ensuring that your shopping experience is seamless from start to finish. Whether you have questions about a product, need help with an order, or just want to provide feedback, our team is here to assist you every step of the way.`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/warehouse.mp4",
   },
   {
     id: "testimonials",
@@ -77,6 +85,8 @@ Customer satisfaction is at the core of what we do. We are committed to providin
 Here are just a few of the glowing reviews we've received: "I was thrilled with the fast shipping and the quality of the product I ordered. It exceeded my expectations!" "The customer service team was incredibly helpful and resolved my issue quickly. I will definitely be shopping here again." "I love the variety of products available. There's always something new to discover, and the prices are unbeatable."
 
 We are committed to maintaining the high standards that have earned us such positive feedback. Our goal is to continue exceeding your expectations and to build lasting relationships based on trust and satisfaction. Your testimonials inspire us to keep improving and to provide you with the best possible shopping experience.`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/shipping.mp4",
   },
   {
     id: "contact",
@@ -90,9 +100,21 @@ We are committed to maintaining the high standards that have earned us such posi
 You can reach us through our contact page, where you will find various ways to get in touch with us. We offer support via email, phone, and live chat, ensuring that you can choose the method that is most convenient for you. Our team is available during regular business hours and will respond to your inquiries as quickly as possible.
 
 Your satisfaction is our top priority, and we are committed to providing you with the best possible service. We appreciate your feedback and look forward to assisting you with all your shopping needs. Thank you for choosing our e-commerce site as your go-to destination for online shopping.`,
+    videoURL:
+      "https://storage.googleapis.com/webapp-assets-images/Videos/contact.mp4",
   },
 ];
-
+const landingPageBG = {
+  backgroundColor: "#1a237e",
+  backgroundImage:
+    "url('https://storage.googleapis.com/webapp-assets-images/ProductImages/mainbg1.jpg')",
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center",
+  color: "#fff",
+  boxShadow: 3,
+  p: 2,
+};
 const ECommerceLandingPage = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState(1);
@@ -136,8 +158,9 @@ const ECommerceLandingPage = () => {
   const selectedSection = sections[currentSectionIndex];
 
   return (
-    <Root>
+    <Root sx={{ ...landingPageBG, p: 0, width: "100" }}>
       <NavBar />
+
       <motion.div
         id="welcome"
         className="hero-section"
@@ -159,10 +182,9 @@ const ECommerceLandingPage = () => {
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          height: "calc(100vh - 48px)",
+          height: "100vh",
           position: "relative",
           overflow: "hidden",
-          borderBottom: "1px solid #969696",
         }}
       >
         <ArrowButton
@@ -238,17 +260,30 @@ const ECommerceLandingPage = () => {
       </motion.div>
 
       <Container
-        style={{
-          marginTop: "40px",
+        maxWidth
+        sx={{
+          // marginTop: "40px",
           backgroundColor: "#cce3ff",
         }}
       >
-        {sections.map((section) => (
-          <ContentSection id={section.id} key={section.id}>
+        {sections.map((section, index) => (
+          <ContentSection
+            id={section.id}
+            key={section.id}
+            sx={{
+              display: "flex",
+              flexDirection: index % 2 === 0 ? "row" : "row-reverse",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              marginBottom: "12px",
+              padding: "20px",
+            }}
+          >
             <Container>
               <Typography variant="h3" component="div" gutterBottom>
                 {section.title}
               </Typography>
+
               <Typography
                 variant="body1"
                 color="textSecondary"
@@ -271,15 +306,36 @@ const ECommerceLandingPage = () => {
               >
                 {section.details}
               </Typography>
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 style={{ marginTop: "20px" }}
                 onClick={() => scrollToSection(section.id)}
               >
                 {section.buttonText}
-              </Button>
+              </Button> */}
             </Container>
+            <Box
+              sx={{
+                // marginBottom: "12px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end !important",
+              }}
+            >
+              <video
+                src={section.videoURL}
+                loop
+                muted
+                autoPlay
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxWidth: "600px",
+                  borderRadius: "8px",
+                }}
+              ></video>
+            </Box>
           </ContentSection>
         ))}
       </Container>

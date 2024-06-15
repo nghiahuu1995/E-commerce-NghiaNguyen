@@ -13,9 +13,28 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
+  const addToCartHandler = (addedProduct) => {
+    setCartItems((prevItems) => {
+      const itemExists = prevItems.find(
+        (item) => item.product_id === addedProduct.product_id
+      );
+      if (itemExists) {
+        return prevItems.map((item) =>
+          item.id === addedProduct.id
+            ? { ...item, quantity: item.quantity + addedProduct.quantity }
+            : item
+        );
+      } else {
+        return [...prevItems, addedProduct];
+      }
+    });
+    console.log(cartItems);
+  };
 
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, totalPrice }}>
+    <CartContext.Provider
+      value={{ cartItems, setCartItems, totalPrice, addToCartHandler }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -26,7 +26,17 @@ import { styled } from "@mui/system";
 import pandaLogo from "../../assets/imgs/logos/panda.png";
 import sadPandaLogo from "../../assets/imgs/logos/sadpanda.png";
 import Search from "./Search";
-
+const navbarBG = {
+  backgroundColor: "#131921",
+  // backgroundImage:
+  //   "url('https://storage.googleapis.com/webapp-assets-images/ProductImages/mainbg1.jpg')",
+  // backgroundSize: "cover",
+  // backgroundRepeat: "no-repeat",
+  // backgroundPosition: "center",
+  color: "#fff",
+  boxShadow: 3,
+  p: 2,
+};
 const Root = styled("div")({
   display: "flex",
   flexDirection: "column",
@@ -38,7 +48,7 @@ const TopBar = styled(AppBar)({
   height: "48px",
   position: "fixed",
   zIndex: "1000",
-  background: "linear-gradient(0deg, rgb(0,117,255) 0%, rgb(0,117,255) 100%)",
+  // background: "linear-gradient(0deg, rgb(0,117,255) 0%, rgb(0,117,255) 100%)",
 });
 
 const Buttons = styled("div")({
@@ -51,6 +61,7 @@ const Buttons = styled("div")({
 const IconStyling = {
   marginRight: "0px",
   marginLeft: "6px",
+  fontSize: "0.8rem",
   fontWeight: "800",
 };
 
@@ -58,9 +69,9 @@ const ButtonStyling = {
   color: "white",
   marginRight: "0px",
   marginLeft: "0px",
-  fontSize: "1.2rem",
+  fontSize: "1.0rem",
   "&:hover": {
-    backgroundColor: "rgba(0,2,100,0.6)",
+    border: "0.5px solid #ffffff",
   },
 };
 
@@ -118,8 +129,11 @@ const NavBar = ({ searchHandler }) => {
     navigate("/login");
   };
 
-  const handleDeleteFromCart = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const handleDeleteFromCart = (productID) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.product_id !== productID)
+    );
+    console.log(productID);
   };
 
   const handleCheckOut = () => {
@@ -131,10 +145,7 @@ const NavBar = ({ searchHandler }) => {
     <Root>
       <TopBar
         position="fixed"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
+        style={{ ...navbarBG, display: "flex", justifyContent: "center" }}
       >
         <Toolbar
           style={{
@@ -143,7 +154,7 @@ const NavBar = ({ searchHandler }) => {
             justifyContent: "center",
           }}
         >
-          <Buttons>
+          <Buttons sx={{ display: "flex", justifyContent: "space-between" }}>
             <Button
               color="inherit"
               sx={ButtonStyling}
@@ -159,32 +170,22 @@ const NavBar = ({ searchHandler }) => {
                 alt=""
                 style={{ width: "30px", marginRight: "0px" }}
               /> */}
-              <Typography
-                sx={{
-                  marginRight: "6px",
-                  marginLeft: "6px",
-                  fontWeight: "700",
-                }}
-              >
-                Home
-              </Typography>
+              <Typography sx={IconStyling}>Home</Typography>
             </Button>
             {isAuthenticated && (
-              <Buttons style={{ display: "flex", justifyContent: "end" }}>
+              <Buttons style={{ display: "flex" }}>
                 <Search searchHandler={searchHandler} />
                 <Button
                   color="inherit"
                   sx={ButtonStyling}
-                  size="small"
-                  onClick={() => (window.location.href = "/profile")}
+                  onClick={() => (window.location.href = "/orders")}
                 >
                   <FontAwesomeIcon icon={faAddressCard} />
-                  <Typography sx={IconStyling}>Profile</Typography>
+                  <Typography sx={IconStyling}>Order</Typography>
                 </Button>
                 <Button
                   color="inherit"
                   sx={ButtonStyling}
-                  size="small"
                   onClick={handleCartClick}
                 >
                   <Badge badgeContent={cartItems.length} color="success">
@@ -207,67 +208,69 @@ const NavBar = ({ searchHandler }) => {
                   }}
                 >
                   <Box sx={{ p: 2, minWidth: "200px", maxWidth: "100%" }}>
-                    <Typography variant="h6">Cart</Typography>
+                    <Typography variant="h6" sx={IconStyling}>
+                      Cart
+                    </Typography>
                     <List sx={{ margin: "0px" }}>
                       {cartItems.map((item, index) => (
-                        <div key={index}>
-                          <ListItem
+                        <ListItem
+                          key={index}
+                          sx={{
+                            marginTop: "02px",
+                            marginBottom: "02px",
+                            backgroundColor: "#fffbca",
+                            height: "120px",
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Box
                             sx={{
-                              marginTop: "02px",
-                              marginBottom: "02px",
-                              backgroundColor: "#fffbca",
-                              height: "120px",
-                              width: "100%",
                               display: "flex",
                               alignItems: "center",
-                              justifyContent: "space-between",
+                              width: "240px",
                             }}
                           >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                width: "240px",
-                              }}
-                            >
-                              <img
-                                src={item.imageUrl}
-                                alt=""
-                                width="40%"
-                                height="100%"
-                                style={{ marginRight: "10px" }}
+                            <img
+                              src={item.imageURL}
+                              alt=""
+                              width="40%"
+                              height="100%"
+                              style={{ marginRight: "10px" }}
+                            />
+                            <List sx={{ width: "100%" }}>
+                              <ListItemText
+                                primary={item.product}
+                                secondary={`price: $${item.price}`}
+                                sx={{ marginRight: "4px" }}
                               />
-                              <List sx={{ width: "100%" }}>
-                                <ListItemText
-                                  primary={item.product}
-                                  secondary={`price: $${item.price}`}
-                                  sx={{ marginRight: "4px" }}
-                                />
-                                <ListItemText
-                                  secondary={`Quantity: ${item.quantity}`}
-                                  sx={{ marginRight: "4px" }}
-                                />
-                                <ListItemText
-                                  secondary={`$${(
-                                    item.quantity * item.price
-                                  ).toFixed(2)}`}
-                                  sx={{ marginRight: "4px" }}
-                                />
-                              </List>
-                            </Box>
-                            <Button
-                              sx={{ alignSelf: "flex-end" }}
-                              size="small"
-                              variant="contained"
-                              color="error"
-                              startIcon={<Delete />}
-                              onClick={() => handleDeleteFromCart(item.id)}
-                            >
-                              Delete
-                            </Button>
-                          </ListItem>
+                              <ListItemText
+                                secondary={`Quantity: ${item.quantity}`}
+                                sx={{ marginRight: "4px" }}
+                              />
+                              <ListItemText
+                                secondary={`$${(
+                                  item.quantity * item.price
+                                ).toFixed(2)}`}
+                                sx={{ marginRight: "4px" }}
+                              />
+                            </List>
+                          </Box>
+                          <Button
+                            sx={{ alignSelf: "flex-end" }}
+                            variant="contained"
+                            color="error"
+                            startIcon={<Delete />}
+                            onClick={() =>
+                              handleDeleteFromCart(item.product_id)
+                            }
+                          >
+                            Delete
+                          </Button>
                           {index < cartItems.length - 1 && <Divider />}
-                        </div>
+                        </ListItem>
                       ))}
                     </List>
                     {cartItems.length < 1 && (
@@ -293,9 +296,7 @@ const NavBar = ({ searchHandler }) => {
                       sx={{ color: "white" }}
                     />
                   </Badge>
-                  <Typography sx={{ color: "white", marginLeft: "4px" }}>
-                    Message
-                  </Typography>
+                  <Typography sx={IconStyling}>Message</Typography>
                 </Button>
                 <Popover
                   id={id}
@@ -325,19 +326,10 @@ const NavBar = ({ searchHandler }) => {
                 </Popover>
               </Buttons>
             )}
-          </Buttons>
-          <div
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
             {isAuthenticated ? (
               <Button
                 color="inherit"
                 sx={LogoutStyling}
-                size="small"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={handleSignout}
@@ -359,19 +351,18 @@ const NavBar = ({ searchHandler }) => {
                 )}
               </Button>
             ) : (
-              <>
-                <Button
-                  color="inherit"
-                  onClick={() => (window.location.href = "/login")}
-                  style={ButtonStyling}
-                  size="small"
-                >
-                  <Typography>Sign In</Typography>
-                  <FontAwesomeIcon icon={faSignInAlt} style={IconStyling} />
-                </Button>
-              </>
+              <Button
+                color="inherit"
+                onClick={() => (window.location.href = "/login")}
+                style={{
+                  ...ButtonStyling,
+                }}
+              >
+                <Typography sx={IconStyling}>Sign In</Typography>
+                <FontAwesomeIcon icon={faSignInAlt} style={IconStyling} />
+              </Button>
             )}
-          </div>
+          </Buttons>
         </Toolbar>
       </TopBar>
     </Root>

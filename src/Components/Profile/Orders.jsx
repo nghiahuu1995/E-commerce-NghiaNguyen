@@ -1,98 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
-  Container,
-  Card,
+  Grid,
   CardContent,
+  List,
+  ListItem,
   Typography,
-  Avatar,
-  Button,
   Tabs,
   Tab,
-  Box,
-  Grid,
 } from "@mui/material";
-import { styled } from "@mui/system";
-import NavBar from "../NavBar/NavBar"; // Import the NavBar component
+import { useNavigate } from "react-router-dom";
+import NavBar from "../NavBar/NavBar";
+import { OrderContext } from "../../contexts/OrderContext";
+import {
+  Root,
+  Content,
+  ProfileCard,
+  ProfileAvatar,
+  OrderTrackingCard,
+  SummaryCard,
+} from "./StyledComponents";
+import TabPanel from "./TabPanel";
+import { UserContext } from "../../contexts/UserContext";
 
-const Root = styled("div")({
-  // display: "flex",
-  // backgroundColor: "rgb(207 223 255)",
-});
-
-const Content = styled(Box)(({ theme }) => ({
-  marginTop: "0px",
-  marginLeft: "0px",
-  marginRight: "0px",
-  flexGrow: 1,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  // alignItems: "center",
-  minHeight: "100vh",
-  padding: "20px",
-  [theme.breakpoints.down("md")]: {
-    marginLeft: "0px",
-    padding: "10px",
-  },
-}));
-
-const ProfileCard = styled(Card)({
-  width: "100%",
-  padding: "20px",
-  textAlign: "center",
-  height: "640px",
-});
-
-const ProfileAvatar = styled(Avatar)({
-  width: "100px",
-  height: "100px",
-  marginBottom: "20px",
-});
-
-const OrderTrackingCard = styled(Card)({
-  width: "100%",
-  padding: "20px",
-  textAlign: "center",
-  height: "640px",
-});
-
-const SummaryCard = styled(Card)({
-  width: "100%",
-  padding: "20px",
-  textAlign: "center",
-  marginTop: "20px",
-});
-
-const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <div>{children}</div>
-        </Box>
-      )}
-    </div>
-  );
-};
-
-const ProfilePage = () => {
+const Orders = () => {
   const [value, setValue] = useState(0);
-  const [user, setUser] = useState({});
+  const { orders, setOrders } = useContext(OrderContext);
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext);
   const { username, email } = user;
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    setUser(userData);
-  }, []);
+  console.log(user.id, orders);
+  // useEffect(() => {
+  //   async function fetchOrder() {
+  //     try {
+  //       const res = await fetch("http://localhost:3001/orders", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ user_id: user.id }),
+  //       });
+  //       const data = await res.json();
+  //       console.log(`data`, data);
+
+  //       setOrders(data);
+  //       console.log(orders);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   }
+
+  //   fetchOrder();
+  // }, [user, setOrders]);
+  useEffect(() => {}, [orders]);
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleOrderClick = async (orderId) => {
+    navigate(`/orders/${orderId}`);
   };
 
   return (
@@ -108,9 +73,51 @@ const ProfilePage = () => {
           <Grid item xs={12} md={8}>
             <OrderTrackingCard>
               <CardContent>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h5" gutterBottom>
                   Order Tracking
                 </Typography>
+                {orders.length > 0 ? (
+                  orders.map((order, i) => (
+                    <List
+                      // button
+                      key={i}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginTop: "4px",
+                        marginBottom: "4px",
+                        backgroundColor: "#eeeeee",
+                        height: "160px",
+                      }}
+                      onClick={() => handleOrderClick(order.order_id)}
+                    >
+                      <ListItem sx={{ width: "40%", height: "60px" }}>
+                        <img src="https://via.placeholder.com/150" alt="" />
+                        <Typography
+                          variant="h6"
+                          gutterBottom
+                          sx={{ margin: "0 24px" }}
+                        >
+                          Order# {order.order_id}
+                        </Typography>
+                      </ListItem>
+                      <ListItem
+                        sx={{ display: "flex", justifyContent: "space-around" }}
+                      >
+                        <Typography variant="h6" gutterBottom>
+                          Status: {order.order_status}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                          Total Amount: ${order.order_amount}
+                        </Typography>
+                      </ListItem>
+                    </List>
+                  ))
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    No orders found.
+                  </Typography>
+                )}
                 <Typography variant="body1" color="textSecondary">
                   Here you can track your orders and view the status of your
                   recent purchases.
@@ -187,4 +194,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default Orders;

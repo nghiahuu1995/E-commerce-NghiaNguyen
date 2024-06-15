@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { useTheme } from "@mui/material/styles";
+import { signupBG, TextFieldColor, InputText } from "./formStyling";
 const Register = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -10,8 +11,18 @@ const Register = () => {
     email: "",
     username: "",
     password: "",
-    securityQuestion: "",
-    answer: "",
+    fullname: "",
+    address: "",
+    phone: "",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    username: "",
+    password: "",
+    fullname: "",
+    address: "",
+    phone: "",
   });
 
   const handleChange = (e) => {
@@ -19,39 +30,65 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setErrors({
+      ...errors,
+      [e.target.name]: "",
+    });
   };
 
   const handleLogin = () => {
     navigate("/login");
   };
 
-  const handleSignUp = async (e) => {
-    // post method here
-    e.preventDefault();
-    try {
-      const res = await fetch("http://192.168.1.32:3001/auth/register", {
-        method: "POST",
-        headers: "application/json",
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error("Registration failed", data);
-      else {
-        console.log("User registered successfully", data);
-        navigate("/login");
-      }
-    } catch (err) {
-      console.error("Error fetching data");
-    }
-  };
-
   const navigateHome = () => {
     navigate("/");
   };
+
+  const validateForm = () => {
+    let valid = true;
+    let newErrors = {};
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      valid = false;
+    }
+
+    if (!formData.username) {
+      newErrors.username = "Username is required";
+      valid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      valid = false;
+    }
+
+    if (!formData.fullname) {
+      newErrors.fullname = "Full Name is required";
+      valid = false;
+    }
+
+    if (!formData.address) {
+      newErrors.address = "Address is required";
+      valid = false;
+    }
+
+    if (!formData.phone) {
+      newErrors.phone = "Phone is required";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     try {
-      const res = await fetch("http://192.168.1.32:3001/auth/register", {
+      const res = await fetch("http://localhost:3001/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -68,20 +105,27 @@ const Register = () => {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container
+      maxWidth="sm"
+      sx={{
+        ...signupBG,
+        marginTop: "12px",
+        color: "white",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginTop: 8,
         }}
       >
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <Box component="form" onSubmit={handleLogin} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
             margin="normal"
             required
             fullWidth
@@ -92,8 +136,11 @@ const Register = () => {
             autoFocus
             value={formData.email}
             onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
             margin="normal"
             required
             fullWidth
@@ -103,8 +150,11 @@ const Register = () => {
             autoComplete="username"
             value={formData.username}
             onChange={handleChange}
+            error={!!errors.username}
+            helperText={errors.username}
           />
           <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
             margin="normal"
             required
             fullWidth
@@ -115,45 +165,65 @@ const Register = () => {
             autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
           />
           <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
             margin="normal"
             required
             fullWidth
-            id="securityQuestion"
-            label="Security Question"
-            name="securityQuestion"
-            autoComplete="security-question"
-            value={formData.securityQuestion}
+            id="fullname"
+            label="Full Name"
+            name="fullname"
+            autoComplete="full-name"
+            value={formData.fullname}
             onChange={handleChange}
+            error={!!errors.fullname}
+            helperText={errors.fullname}
           />
           <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
             margin="normal"
             required
             fullWidth
-            id="securityAnswer"
-            label="Answer"
-            name="securityAnswer"
-            autoComplete="security-answer"
-            value={formData.securityanswer}
+            id="address"
+            label="Address"
+            name="address"
+            autoComplete="address"
+            value={formData.address}
             onChange={handleChange}
+            error={!!errors.address}
+            helperText={errors.address}
+          />
+          <TextField
+            sx={{ ...InputText, ...TextFieldColor }}
+            margin="normal"
+            required
+            fullWidth
+            id="phone"
+            label="Phone"
+            name="phone"
+            autoComplete="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            error={!!errors.phone}
+            helperText={errors.phone}
           />
           <Button
             fullWidth
             type="submit"
             variant="contained"
             color="signup"
-            onClick={handleSubmit}
             sx={{ mt: 1, mb: 2 }}
           >
             Sign Up
           </Button>
           <Button
-            // type="submit"
-            onClick={handleLogin}
             fullWidth
             variant="contained"
             color="login"
+            onClick={handleLogin}
             sx={{ mt: 3, mb: 2 }}
           >
             Log In

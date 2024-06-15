@@ -3,20 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { useTheme } from "@mui/material/styles";
-
+import { UserContext } from "../../contexts/UserContext";
 import { jwtDecode } from "jwt-decode";
-
+import { formBG, InputText, TextFieldColor } from "./formStyling";
 const LoginPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    // email: "",
     username: "",
     password: "",
-    securityQuestion: "",
+    // securityQuestion: "",
   });
   const [error, setError] = useState(null);
-
+  const { user, setUser } = useContext(UserContext);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,7 +29,7 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const res = await fetch("http://192.168.1.32:3001/auth/login", {
+      const res = await fetch("http://localhost:3001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -46,7 +46,13 @@ const LoginPage = () => {
       const decodedToken = jwtDecode(data.token);
       localStorage.setItem("user", JSON.stringify(decodedToken));
       console.log(decodedToken);
-      console.log("User logged in successfully", data);
+      const { id } = decodedToken;
+
+      console.log(user);
+
+      setUser(decodedToken);
+      console.log(user);
+      console.log("User logged in successfully", id);
       navigate("/products");
     } catch (err) {
       setError(err.message);
@@ -63,7 +69,14 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container
+      maxWidth="xs"
+      sx={{
+        ...formBG,
+        marginTop: "72px",
+        color: "white",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -87,6 +100,7 @@ const LoginPage = () => {
             autoComplete="username"
             value={formData.username}
             onChange={handleChange}
+            sx={{ ...InputText, ...TextFieldColor }}
           />
           <TextField
             margin="normal"
@@ -99,6 +113,7 @@ const LoginPage = () => {
             autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
+            sx={{ ...InputText, ...TextFieldColor }}
           />
           {error && (
             <Typography color="error" variant="body2">

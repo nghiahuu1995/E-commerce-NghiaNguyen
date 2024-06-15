@@ -68,7 +68,7 @@ export const ProductImage = styled(CardMedia)({
 
 export const ArrowButton = styled(IconButton)({
   position: "absolute",
-  top: "50%",
+  top: "20%",
   transform: "translateY(-50%)",
   backgroundColor: "rgba(255, 255, 255, 0.7)",
   "&:hover": {
@@ -83,14 +83,4 @@ export const FooterSection = styled(Box)({
   color: "#ffffff",
   padding: "20px",
   textAlign: "center",
-});
-
-export const PriceTag = styled(Typography)({
-  fontFamily: "Roboto, sans-serif",
-  fontSize: "24px",
-  fontWeight: "bold",
-  color: "#333",
-  padding: "10px",
-  backgroundColor: "#f8f8f8",
-  borderRadius: "5px",
 });

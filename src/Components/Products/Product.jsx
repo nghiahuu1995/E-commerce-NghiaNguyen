@@ -1,156 +1,93 @@
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Rating,
-} from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
+import { cardBG } from "../Home/formStyling";
+import { useNavigate } from "react-router-dom";
+import { SelectedProductContext } from "../../contexts/ProductDetailContext";
 
 const productNameStyling = {
   fontWeight: "800",
+  color: "#000000",
 };
 
-const Product = ({ product, onAddToCart }) => {
-  const [quantity, setQuantity] = useState(1);
+const Product = ({ product }) => {
+  const navigate = useNavigate();
+  const [isSelectingText, setIsSelectingText] = useState(false);
+
+  const { setSelectedProduct } = useContext(SelectedProductContext);
   const {
-    product_name,
+    product_name: name,
     price,
     seller,
     description,
-    image_url,
-    rating,
+    imageURL,
+    average_rating: rating,
     stock,
-    id,
+    product_id,
   } = product;
 
-  const quantityHandler = (e) => {
-    setQuantity(parseInt(e.target.value));
+  const handleMouseDown = (e) => {
+    const selection = window.getSelection();
+    setIsSelectingText(selection.toString().length > 0);
+  };
+
+  const handleMouseUp = (e) => {
+    const selection = window.getSelection();
+    setIsSelectingText(selection.toString().length > 0);
+  };
+
+  const navigateProductDetail = (productID) => {
+    if (!isSelectingText) {
+      const productDetail = {
+        product_id,
+        name,
+        price,
+        seller,
+        description,
+        imageURL,
+        average_rating: rating,
+        stock,
+      };
+      setSelectedProduct(productDetail);
+      navigate(`/products/${productID}`);
+    }
   };
 
   return (
     <Card
       sx={{
-        width: { xs: "90%", sm: 250, lg: 275 },
-        // margin: { xs: 1, sm: 0 },
+        ...cardBG,
+        // width: { xs: "100%", sm: 200, lg: 200 },
         marginBottom: "6px",
         marginTop: "6px",
+        margin: "2px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: { xs: "auto", sm: 400 },
+        height: { xs: "auto" },
         maxHeight: "100%",
       }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onClick={() => navigateProductDetail(product_id)}
     >
-      <CardMedia
-        component="img"
-        height="160px"
-        // maxHeight="100%"
-        image={image_url}
-        alt={product_name}
-      />
+      <CardMedia component="img" height="100%" image={imageURL} alt={name} />
       <CardContent
         sx={{
           flexGrow: 1,
-          overflow: "scroll",
+          overflow: "hidden",
+          padding: "0 !important",
           "&::-webkit-scrollbar": {
             display: "none",
           },
           msOverflowStyle: "none",
           scrollbarWidth: "none",
+          position: "relative",
         }}
       >
-        <Typography variant="h5" component="div" sx={productNameStyling}>
-          {product_name}
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Price: ${price}
-        </Typography>
-        <Typography variant="body2">🏪 Seller: {seller}</Typography>
-        <Typography
-          variant="body2"
-          sx={{ display: "flex", alignContent: "center" }}
-        >
-          ⭐ Rating: {Number(rating).toFixed(1)}
-          <Rating
-            name="half-rating-read"
-            defaultValue={+rating}
-            precision={0.1}
-            size="small"
-            readOnly
-          />
-        </Typography>
-
-        <Typography variant="body2">📦 Stock: {stock}</Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            mt: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Description: {description}
+        <Typography variant="body1" component="div" sx={productNameStyling}>
+          {name}
         </Typography>
       </CardContent>
-      <Box
-        sx={{
-          p: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-around",
-        }}
-      >
-        <FormControl sx={{ m: 1, minWidth: 80 }}>
-          <InputLabel id="demo-simple-select-autowidth-label">
-            Quantity
-          </InputLabel>
-          <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
-            value={quantity}
-            onChange={quantityHandler}
-            autoWidth
-            label="Quantity"
-            size="small"
-          >
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
-            <MenuItem value={4}>4</MenuItem>
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={6}>6</MenuItem>
-            <MenuItem value={7}>7</MenuItem>
-            <MenuItem value={8}>8</MenuItem>
-            <MenuItem value={9}>9</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            const cartProducts = {
-              id: id,
-              product: product_name,
-              price: price,
-              imageUrl: image_url,
-              quantity: quantity,
-            };
-            console.log(cartProducts);
-            onAddToCart(cartProducts);
-          }}
-        >
-          Add to Cart
-        </Button>
-      </Box>
     </Card>
   );
 };

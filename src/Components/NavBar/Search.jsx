@@ -3,13 +3,11 @@ import { Input, Box } from "@mui/material";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const styling = {
-  position: "fixed",
   width: "40%",
   maxWidth: "100%",
   color: "#ffffff",
-  height: "48px",
-  top: "0px",
-  left: "20%",
+  height: "36px",
+
   zIndex: "1000",
 };
 export default function Search({ searchHandler }) {
@@ -23,13 +21,14 @@ export default function Search({ searchHandler }) {
         alignItems: "center",
       }}
     >
-      <FontAwesomeIcon icon={faSearch} size="2x" sx={styling} />
-      <input
+      <FontAwesomeIcon icon={faSearch} size="sm" sx={styling} />
+      <Input
         // fullWidth
-        style={{
-          // color: "#ffffff",
+        sx={{
+          backgroundColor: "#ffffff",
           paddingLeft: "12px",
           marginLeft: "12px",
+          marginRight: "12px",
           maxWidth: "100%",
           width: "100%",
           height: "36px",

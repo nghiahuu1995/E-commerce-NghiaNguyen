@@ -20,3 +20,10 @@
 
 06/07/2024
 + Add payment process
+
+06/10/2024
++ Filter products based on CategoryList (ChatGPT)
+
+06/12/2024
++ Rework with UI
++ Card Login, Signup components design insprired by Carl Hauser (https://collectui.com/designers/carlhauser/checkout)
